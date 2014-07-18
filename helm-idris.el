@@ -144,6 +144,7 @@
                ("Full documentation" . helm-idris-get-docs))))
   "A source description for Idris :apropos")
 
+;;;###autoload
 (defun helm-idris ()
   "Search the Idris documentation with Helm"
   (interactive)
