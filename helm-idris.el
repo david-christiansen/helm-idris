@@ -5,7 +5,8 @@
 ;; Author: David Raymond Christiansen <david@davidchristiansen.dk>
 ;; Maintainer: David Raymond Christiansen <david@davidchristiansen.dk>
 ;; Keywords: languages, helm
-;; Package-Requires: ((helm "0.0.0") (idris-mode "0.0.0")
+;; Package-Requires: ((helm "0.0.0") (idris-mode "0.9.14"))
+;; Version: 0.0.1
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
