@@ -42,7 +42,7 @@
                             str))
 
 (defun helm-idris-first-word (str)
-  (let ((split (split-string query nil t)))
+  (let ((split (split-string str nil t)))
     (if split
         (car split)
       "")))
