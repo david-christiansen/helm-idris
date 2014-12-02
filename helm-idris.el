@@ -29,9 +29,11 @@
 
 ;;; Code:
 
-(require 'inferior-idris)
+(require 'helm)
+(require 'idris-commands)
 (require 'idris-common-utils)
 (require 'idris-info)
+(require 'inferior-idris)
 
 ;; see http://www.emacswiki.org/emacs/ElispCookbook
 (defun helm-idris-chomp (str)
@@ -42,6 +44,7 @@
                             str))
 
 (defun helm-idris-first-word (str)
+  "Split STR into words and return the first word or the empty string."
   (let ((split (split-string str nil t)))
     (if split
         (car split)
@@ -50,6 +53,7 @@
 (defvar helm-idris-query-cache nil "The results of the last compiler query as (QUERY TIMESTAMP RES), or nil.")
 
 (defun helm-idris-apropos-search (query)
+  "Execute an idris-mode apropos search using QUERY and return the results."
   (if (and helm-idris-query-cache
            (string= (car helm-idris-query-cache) query)
            (< (- (cadr helm-idris-query-cache) 10) (float-time)))
@@ -96,6 +100,7 @@
           res)))
 
 (defun helm-idris-format-candidate (candidate)
+  "Return a formatted string for CANDIDATE."
   (let ((name (assoc :name candidate))
         (type (assoc :type candidate))
         (docs (assoc :docs candidate)))
@@ -104,27 +109,32 @@
             (if (and docs (cadr docs)) (concat "\n" (helm-idris-chomp (cadr docs))) ""))))
 
 (defun helm-idris-search-formatted (query)
+  "Execute an idris-mode apropos search using QUERY and return formatted results."
   (let ((apropos-output (helm-idris-apropos-search (helm-idris-first-word query))))
     (mapcar #'(lambda (res)
                 (cons (helm-idris-format-candidate res) res))
             apropos-output)))
 
-
-(defun helm-idris-search () (helm-idris-search-formatted helm-pattern))
+(defun helm-idris-search ()
+  "Execute a formatted idris search using `helm-pattern'."
+  (helm-idris-search-formatted helm-pattern))
 
 (defun helm-idris-insert-qualified (candidate)
+  "Insert CANDIDATE as a qualified name."
   (let ((name (assoc :name candidate)))
     (if name
         (insert (substring-no-properties (cadr name)))
       (error "No name to insert"))))
 
 (defun helm-idris-insert-unqualified (candidate)
+  "Insert CANDIDATE as an unqualified name."
   (let ((name (assoc :name candidate)))
     (if name
         (insert (replace-regexp-in-string ".*\\." "" (substring-no-properties (cadr name))))
       (error "No name to insert"))))
 
 (defun helm-idris-get-docs (candidate)
+  "Get the internal documentation for CANDIDATE."
   (let ((name (assoc :name candidate)))
     (if name
         (idris-info-for-name :docs-for (substring-no-properties (cadr name)))
@@ -142,11 +152,11 @@
     (action . (("Insert" . helm-idris-insert-unqualified)
                ("Insert qualified" . helm-idris-insert-qualified)
                ("Full documentation" . helm-idris-get-docs))))
-  "A source description for Idris :apropos")
+  "A source description for Idris :apropos.")
 
 ;;;###autoload
 (defun helm-idris ()
-  "Search the Idris documentation with Helm"
+  "Search the Idris documentation with Helm."
   (interactive)
   (helm :sources '(helm-idris-apropos-source)
         :buffer "*helm-idris*"))
